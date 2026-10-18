@@ -25,6 +25,7 @@
       --accent: #b8432c;
       --grain: 0.05;
       --ease: cubic-bezier(0.22, 1, 0.36, 1);
+      --sheet-ease: cubic-bezier(0.32, 0.72, 0, 1);
     }
     @media (prefers-color-scheme: dark) {
       :root {
@@ -39,7 +40,7 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; overflow: hidden; }
+    html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
 
     body {
       background: var(--bg);
@@ -179,22 +180,143 @@
       .contact:has(:focus-visible) .copy { opacity: 1; transform: none; pointer-events: auto; transition-delay: 0s, 0s, 0.12s, 0.12s; }
       .contact .mail:hover::after { transform: scaleX(1); transform-origin: left; }
     }
-    /* Écrans tactiles : l'adresse est affichée directement, avec l'icône pour copier */
-    @media (hover: none) {
-      .contact .window { width: var(--w2, auto); }
-      .contact .track-txt { transform: translateY(-50%); }
-      .contact .copy { opacity: 1; transform: none; pointer-events: auto; }
-      .contact { gap: 6px; }
-      .contact .copy { width: 40px; height: 40px; margin: -12px -6px -12px -12px; }
-      .contact .copy svg { width: 13px; height: 13px; }
-      .contact .copy:active { background: var(--track); }
-      .contact .mail { padding: 12px 0; margin: -12px 0; }
-      .contact .mail::after { bottom: 9px; }
-      .contact .mail:active { opacity: 0.6; }
+    /* Écrans tactiles : « Me contacter » ouvre un panneau en bas d'écran */
+    @media (hover: none) and (pointer: coarse) {
+      .contact .copy { display: none; }
+      .contact .mail { padding: 14px 0; margin: -14px 0; }
+      .contact .mail:active { opacity: 0.5; transition: opacity 0s; }
     }
-    @media (hover: none) and (max-width: 380px) {
-      .contact .label, .contact .email { font-size: 10px; letter-spacing: 0; }
-      .name { font-size: 15px; }
+
+    /* Bottom sheet */
+    .sheet-root {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      visibility: hidden;
+      pointer-events: none;
+      transition: visibility 0s 0.5s;
+    }
+    .sheet-root.is-open { visibility: visible; pointer-events: auto; transition: visibility 0s; }
+    .scrim {
+      position: absolute;
+      inset: 0;
+      background: rgba(10, 10, 9, 0.38);
+      opacity: 0;
+      transition: opacity 0.5s var(--sheet-ease);
+      -webkit-tap-highlight-color: transparent;
+      touch-action: none;
+    }
+    .sheet-root.is-open .scrim { opacity: 1; }
+    .sheet {
+      --sheet-bg: #fbfaf7;
+      position: absolute;
+      left: 8px;
+      right: 8px;
+      bottom: 0;
+      max-width: 520px;
+      margin: 0 auto;
+      background: var(--sheet-bg);
+      color: var(--ink);
+      border-radius: 18px 18px 0 0;
+      padding: 8px 20px calc(16px + env(safe-area-inset-bottom));
+      box-shadow: 0 -1px 0 var(--hair), 0 -18px 40px -20px rgba(0, 0, 0, 0.35);
+      transform: translate3d(0, 100%, 0);
+      transition: transform 0.5s var(--sheet-ease);
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      outline: none;
+    }
+    .sheet::after {
+      /* prolonge le fond sous le panneau quand on le tire vers le haut */
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 100%;
+      height: 60px;
+      background: var(--sheet-bg);
+    }
+    .sheet-root.is-open .sheet { transform: translate3d(0, 0, 0); }
+    .sheet.is-dragging, .sheet-root.is-dragging .scrim { transition: none; }
+    @media (prefers-color-scheme: dark) {
+      .sheet { --sheet-bg: #1b1b19; }
+      .scrim { background: rgba(0, 0, 0, 0.55); }
+    }
+    .grabber {
+      width: 36px;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--hair);
+      margin: 0 auto 18px;
+    }
+    .sheet-email {
+      font-size: 22px;
+      font-style: italic;
+      margin-top: 4px;
+      word-break: break-all;
+    }
+    .actions {
+      margin-top: 18px;
+      border-top: 1px solid var(--hair);
+    }
+    .action {
+      appearance: none;
+      background: none;
+      border: 0;
+      border-bottom: 1px solid var(--hair);
+      width: 100%;
+      min-height: 56px;
+      display: grid;
+      grid-template-columns: 22px 1fr auto;
+      align-items: center;
+      gap: 14px;
+      padding: 0 4px;
+      font: inherit;
+      font-size: 17px;
+      color: var(--ink);
+      text-align: left;
+      text-decoration: none;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: background-color 0.25s ease;
+    }
+    .action:active { background: var(--track); transition: none; }
+    .action:focus-visible { outline: 1px solid var(--muted); outline-offset: -1px; }
+    .action svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .action .chev { width: 12px; height: 12px; color: var(--muted); }
+    .action .ico { position: relative; display: grid; place-items: center; }
+    .action .ico svg { grid-area: 1 / 1; transition: opacity 0.3s var(--ease), transform 0.45s var(--ease); }
+    .action .ico .i-check { opacity: 0; transform: scale(0.5); color: var(--accent); stroke-width: 1.6; }
+    .action.is-copied .ico .i-copy { opacity: 0; transform: scale(0.5); }
+    .action.is-copied .ico .i-check { opacity: 1; transform: none; }
+    .action .txt { position: relative; height: 1.3em; overflow: hidden; }
+    .action .txt span { display: block; line-height: 1.3em; transition: transform 0.45s var(--ease); }
+    .action.is-copied .txt span { transform: translateY(-100%); }
+    .sheet-close {
+      appearance: none;
+      background: none;
+      border: 0;
+      width: 100%;
+      min-height: 52px;
+      margin-top: 6px;
+      color: var(--muted);
+      font: inherit;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .sheet-close:active { color: var(--ink); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .sheet, .scrim { transition-duration: 0.01s; }
     }
     .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
@@ -403,18 +525,70 @@
     </footer>
   </div>
 
+  <div class="sheet-root" id="sheet" aria-hidden="true">
+    <div class="scrim" data-close></div>
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title" tabindex="-1">
+      <div class="grabber" aria-hidden="true"></div>
+      <p class="label muted" id="sheet-title">Contact</p>
+      <p class="sheet-email">dupas.elodie@outlook.com</p>
+      <div class="actions">
+        <a class="action" href="mailto:dupas.elodie@outlook.com">
+          <svg viewBox="0 0 18 18" aria-hidden="true"><rect x="1.5" y="3.5" width="15" height="11" rx="1.5"/><path d="m2 4.5 7 5.5 7-5.5"/></svg>
+          <span>Écrire un e-mail</span>
+          <svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2 4 4-4 4"/></svg>
+        </a>
+        <button class="action" type="button" data-copy>
+          <span class="ico" aria-hidden="true">
+            <svg class="i-copy" viewBox="0 0 18 18"><rect x="5.5" y="5.5" width="10" height="10" rx="1.5"/><path d="M12.5 2.5h-8a2 2 0 0 0-2 2v8"/></svg>
+            <svg class="i-check" viewBox="0 0 18 18"><path d="M3.5 9.5 7.2 13 14.5 5"/></svg>
+          </span>
+          <span class="txt"><span>Copier l'adresse</span><span>Adresse copiée</span></span>
+          <span></span>
+        </button>
+      </div>
+      <button class="sheet-close" type="button" data-close>Fermer</button>
+    </div>
+  </div>
+
   <script>
     try {
       var d = new Date(), p = function (n) { return String(n).padStart(2, "0"); };
       document.getElementById("y").textContent = d.getFullYear();
       document.getElementById("today").textContent = p(d.getDate()) + "." + p(d.getMonth() + 1) + "." + d.getFullYear();
     } catch (e) {}
+    var EMAIL = "dupas.elodie@outlook.com";
+    var statusEl = document.getElementById("contact-status");
+
+    function copyEmail() {
+      function fallback() {
+        var ta = document.createElement("textarea");
+        ta.value = EMAIL;
+        ta.setAttribute("readonly", "");
+        ta.style.cssText = "position:fixed;top:0;opacity:0;font-size:16px";
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.setSelectionRange(0, EMAIL.length);
+        var ok = false;
+        try { ok = document.execCommand("copy"); } catch (e) {}
+        document.body.removeChild(ta);
+        return ok;
+      }
+      if (navigator.clipboard && window.isSecureContext) {
+        return navigator.clipboard.writeText(EMAIL).then(function () { return true; }, fallback);
+      }
+      return Promise.resolve(fallback());
+    }
+
+    function announce(msg) {
+      statusEl.textContent = msg;
+      setTimeout(function () { statusEl.textContent = ""; }, 2400);
+    }
+
+    // Desktop : survol + icône copier
     (function () {
       var root = document.querySelector(".contact");
       var btn = root.querySelector(".copy");
       var win = root.querySelector(".window");
-      var status = document.getElementById("contact-status");
-      var email = btn.getAttribute("data-email");
       var timer;
 
       // Largeurs des deux libellés, pour que la fenêtre s'ajuste au survol
@@ -426,39 +600,133 @@
       if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
       addEventListener("resize", measure);
 
-      function fallbackCopy(text) {
-        var ta = document.createElement("textarea");
-        ta.value = text;
-        ta.setAttribute("readonly", "");
-        ta.style.cssText = "position:fixed;opacity:0;pointer-events:none";
-        document.body.appendChild(ta);
-        ta.select();
-        var ok = false;
-        try { ok = document.execCommand("copy"); } catch (e) {}
-        document.body.removeChild(ta);
-        return ok;
-      }
-
-      function copied() {
-        btn.classList.add("is-copied");
-        btn.setAttribute("aria-label", "Adresse e-mail copiée");
-        status.textContent = "Adresse e-mail copiée";
-        clearTimeout(timer);
-        timer = setTimeout(function () {
-          btn.classList.remove("is-copied");
-          btn.setAttribute("aria-label", "Copier l'adresse e-mail");
-          status.textContent = "";
-        }, 2400);
-      }
-
       btn.addEventListener("click", function () {
-        var fail = function () { if (fallbackCopy(email)) copied(); };
-        if (navigator.clipboard && window.isSecureContext) {
-          navigator.clipboard.writeText(email).then(copied, fail);
-        } else {
-          fail();
-        }
+        copyEmail().then(function (ok) {
+          if (!ok) return;
+          btn.classList.add("is-copied");
+          announce("Adresse e-mail copiée");
+          clearTimeout(timer);
+          timer = setTimeout(function () { btn.classList.remove("is-copied"); }, 2400);
+        });
       });
+    })();
+
+    // Mobile : panneau en bas d'écran
+    (function () {
+      var touch = matchMedia("(hover: none) and (pointer: coarse)");
+      var trigger = document.querySelector(".contact .mail");
+      var root = document.getElementById("sheet");
+      var sheet = root.querySelector(".sheet");
+      var page = document.querySelector(".page");
+      var copyBtn = root.querySelector("[data-copy]");
+      var isOpen = false, closeTimer, resetTimer;
+
+      // Active les états :active sur iOS
+      document.addEventListener("touchstart", function () {}, { passive: true });
+
+      function open() {
+        if (isOpen) return;
+        isOpen = true;
+        sheet.style.transform = "";
+        root.classList.add("is-open");
+        root.setAttribute("aria-hidden", "false");
+        page.inert = true;
+        sheet.focus({ preventScroll: true });
+      }
+
+      function close() {
+        if (!isOpen) return;
+        isOpen = false;
+        clearTimeout(closeTimer);
+        sheet.style.transform = "";
+        root.classList.remove("is-open");
+        root.setAttribute("aria-hidden", "true");
+        page.inert = false;
+        trigger.focus({ preventScroll: true });
+        clearTimeout(resetTimer);
+        resetTimer = setTimeout(function () { copyBtn.classList.remove("is-copied"); }, 500);
+      }
+
+      trigger.addEventListener("click", function (e) {
+        if (!touch.matches) return; // desktop : mailto direct
+        e.preventDefault();
+        open();
+      });
+      trigger.setAttribute("aria-haspopup", touch.matches ? "dialog" : "false");
+
+      root.addEventListener("click", function (e) {
+        if (e.target.closest("[data-close]")) close();
+      });
+      root.querySelector('a.action').addEventListener("click", function () {
+        setTimeout(close, 300);
+      });
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") close();
+      });
+
+      copyBtn.addEventListener("click", function () {
+        copyEmail().then(function (ok) {
+          if (!ok) return;
+          copyBtn.classList.add("is-copied");
+          announce("Adresse e-mail copiée");
+          if (navigator.vibrate) navigator.vibrate(8);
+          clearTimeout(closeTimer);
+          closeTimer = setTimeout(close, 1400);
+        });
+      });
+
+      // Glisser vers le bas pour fermer
+      var startY = 0, dy = 0, lastY = 0, lastT = 0, velocity = 0, dragging = false, moved = false, h = 0;
+
+      sheet.addEventListener("pointerdown", function (e) {
+        if (!isOpen || (e.pointerType === "mouse" && e.button !== 0)) return;
+        dragging = true;
+        moved = false;
+        startY = lastY = e.clientY;
+        lastT = e.timeStamp;
+        dy = velocity = 0;
+        h = sheet.offsetHeight;
+      });
+
+      addEventListener("pointermove", function (e) {
+        if (!dragging) return;
+        var raw = e.clientY - startY;
+        if (!moved && Math.abs(raw) < 6) return;
+        if (!moved) {
+          moved = true;
+          sheet.classList.add("is-dragging");
+          root.classList.add("is-dragging");
+        }
+        // résistance élastique vers le haut
+        dy = raw > 0 ? raw : -Math.sqrt(-raw) * 2.5;
+        var dt = Math.max(1, e.timeStamp - lastT);
+        velocity = 0.8 * ((e.clientY - lastY) / dt) + 0.2 * velocity;
+        lastY = e.clientY;
+        lastT = e.timeStamp;
+        sheet.style.transform = "translate3d(0," + dy + "px,0)";
+        root.querySelector(".scrim").style.opacity = String(Math.max(0, 1 - Math.max(0, dy) / h));
+      }, { passive: true });
+
+      function endDrag() {
+        if (!dragging) return;
+        dragging = false;
+        if (!moved) return;
+        sheet.classList.remove("is-dragging");
+        root.classList.remove("is-dragging");
+        root.querySelector(".scrim").style.opacity = "";
+        if (dy > h * 0.3 || velocity > 0.45) {
+          close();
+        } else {
+          sheet.style.transform = "";
+        }
+      }
+      addEventListener("pointerup", endDrag);
+      addEventListener("pointercancel", endDrag);
+
+      // Un glisser ne doit pas déclencher de clic sur les actions
+      sheet.addEventListener("click", function (e) {
+        if (moved) { e.preventDefault(); e.stopPropagation(); moved = false; }
+      }, true);
     })();
   </script>
 </body>
