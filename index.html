@@ -151,10 +151,19 @@
       .contact:hover .track-txt { transform: translateY(-50%); }
       .contact:hover::after { transform: scaleX(1); transform-origin: left; }
     }
-    .contact:focus-visible .track-txt { transform: translateY(-50%); }
     .contact.is-copied .track-txt { opacity: 0; transform: translateY(-100%); }
     .contact.is-copied .done { opacity: 1; transform: none; }
     .contact.is-copied::after { transform: scaleX(0); }
+    @media (hover: hover) {
+      .contact:focus-visible .track-txt { transform: translateY(-50%); }
+    }
+    /* Écrans tactiles : pas de défilement, simple fondu */
+    @media (hover: none) {
+      .contact .track-txt,
+      .contact .done,
+      .contact.is-copied .track-txt,
+      .contact.is-copied .done { transform: none; transition: opacity 0.45s var(--ease); }
+    }
     .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
     /* Stage */
