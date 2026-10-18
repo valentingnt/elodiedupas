@@ -37,9 +37,7 @@ PAIRS = [
      '"knowsAbout": ["Development economics", "Air pollution", "Environmental economics", "Gender", "Low- and middle-income countries"]'),
     # Contenu visible
     ('Doctorante en économie du développement · <abbr', 'PhD candidate in development economics · <abbr'),
-    ('aria-label="Copier l\'adresse e-mail"', 'aria-label="Copy email address"'),
-    ('aria-label="Me contacter : dupas.elodie@outlook.com"', 'aria-label="Contact me: dupas.elodie@outlook.com"'),
-    ('<span class="t1">Me contacter</span>', '<span class="t1">Contact me</span>'),
+    ('aria-controls="sheet">Me contacter</button>', 'aria-controls="sheet">Contact me</button>'),
     ('<p class="caption">Approvisionnement, étude de terrain.</p>', '<p class="caption">Supply chain, a field study.</p>'),
     ('alt="Un teckel en lunettes de soleil, debout sur un jerrican, qui fait le plein à la pompe."',
      'alt="A dachshund in sunglasses, standing on a jerrycan, filling up at a petrol pump."'),

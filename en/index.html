@@ -181,63 +181,20 @@
       gap: 10px;
       color: var(--ink);
     }
-    .contact .copy {
+    .contact .mail {
       appearance: none;
       background: none;
       border: 0;
-      color: var(--muted);
+      padding: 0;
+      font: inherit;
+      letter-spacing: inherit;
+      text-transform: inherit;
+      color: inherit;
       cursor: pointer;
       position: relative;
-      display: grid;
-      place-items: center;
-      width: 22px;
-      height: 22px;
-      margin: -4px -4px -4px 0;
-      border-radius: 50%;
-      opacity: 0;
-      transform: translateY(40%);
-      pointer-events: none;
-      transition: color 0.3s var(--ease), background-color 0.3s var(--ease), opacity 0.4s var(--ease), transform 0.6s var(--ease);
       -webkit-tap-highlight-color: transparent;
     }
-    .contact .copy svg {
-      grid-area: 1 / 1;
-      width: 12px;
-      height: 12px;
-      fill: none;
-      stroke: currentColor;
-      stroke-width: 1.3;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      transition: opacity 0.35s var(--ease), transform 0.5s var(--ease);
-    }
-    .contact .copy .i-check { opacity: 0; transform: scale(0.6); color: var(--accent); stroke-width: 1.6; }
-    .contact .copy.is-copied .i-copy { opacity: 0; transform: scale(0.6); }
-    .contact .copy.is-copied .i-check { opacity: 1; transform: none; }
-    .contact .copy:focus-visible,
     .contact .mail:focus-visible { outline: 1px solid var(--muted); outline-offset: 4px; }
-
-    .contact .mail {
-      position: relative;
-      color: inherit;
-      text-decoration: none;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .contact .window {
-      display: block;
-      height: 1.5em;
-      overflow: hidden;
-      /* largeur fixe (celle de l'adresse) : le survol ne fait défiler que verticalement */
-      width: var(--w2, auto);
-    }
-    .contact .track-txt {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      transition: transform 0.6s var(--ease);
-    }
-    .contact .track-txt span { display: block; height: 1.5em; white-space: nowrap; width: max-content; }
-    .contact .email { text-transform: none; letter-spacing: 0.02em; }
     .contact .mail::after {
       content: "";
       position: absolute;
@@ -250,18 +207,12 @@
       transform-origin: right;
       transition: transform 0.6s var(--ease);
     }
-    @media (hover: hover) {
-      .contact .copy:hover { color: var(--ink); background: var(--track); }
-      .contact:hover .track-txt,
-      .contact:has(:focus-visible) .track-txt { transform: translateY(-50%); }
-      .contact:hover .copy,
-      .contact:has(:focus-visible) .copy { opacity: 1; transform: none; pointer-events: auto; transition-delay: 0s, 0s, 0.12s, 0.12s; }
-      .contact .mail:hover::after { transform: scaleX(1); transform-origin: left; }
+    @media (hover: hover), (pointer: fine) {
+      .contact .mail:hover::after,
+      .contact .mail[aria-expanded="true"]::after { transform: scaleX(1); transform-origin: left; }
     }
-    /* Écrans tactiles : « Me contacter » ouvre un panneau en bas d'écran */
+    /* Écrans tactiles : grande zone de toucher */
     @media (hover: none) and (pointer: coarse) {
-      .contact .copy { display: none; }
-      .contact .window { width: var(--w1, auto); }
       .contact .mail { padding: 14px 0; margin: -14px 0; }
       .contact .mail:active { opacity: 0.5; transition: opacity 0s; }
     }
@@ -394,6 +345,33 @@
 
     @media (prefers-reduced-motion: reduce) {
       .sheet, .scrim { transition-duration: 0.01s; }
+    }
+    /* Souris / trackpad : le même panneau, en popover sous « Me contacter » */
+    @media (hover: hover), (pointer: fine) {
+      .scrim, .sheet-root.is-open .scrim { background: transparent; }
+      .sheet {
+        left: auto;
+        bottom: auto;
+        top: var(--pop-top, 64px);
+        right: var(--pop-right, 24px);
+        width: min(340px, calc(100vw - 32px));
+        border-radius: 10px;
+        padding: 16px 18px 6px;
+        box-shadow: 0 0 0 1px var(--hair), 0 22px 48px -22px rgba(0, 0, 0, 0.4);
+        transform: translate3d(0, -6px, 0);
+        opacity: 0;
+        transition: transform 0.4s var(--ease), opacity 0.25s var(--ease);
+        touch-action: auto;
+      }
+      .sheet::after, .grabber, .sheet-close { display: none; }
+      .sheet-root.is-open .sheet { transform: none; opacity: 1; }
+      .sheet-email { font-size: 18px; margin-top: 2px; }
+      .actions { margin-top: 14px; }
+      .action { min-height: 46px; font-size: 15px; gap: 12px; padding: 0 6px; margin: 0 -6px; width: calc(100% + 12px); border-radius: 6px; }
+      .action:last-child { border-bottom: 0; }
+      .action:hover { background: var(--track); }
+      .action:hover .chev { transform: translateX(2px); }
+      .action .chev { transition: transform 0.3s var(--ease); }
     }
     .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
@@ -603,18 +581,7 @@
       <h1 class="name">Élodie Dupas</h1>
       <span class="label muted mid">PhD candidate in development economics · <abbr title="Bordeaux School of Economics">BSE</abbr></span>
       <div class="contact label">
-        <button class="copy" type="button" data-email="dupas.elodie@outlook.com" aria-label="Copy email address">
-          <svg class="i-copy" viewBox="0 0 12 12" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><path d="M8.5 1.5h-6a1 1 0 0 0-1 1v6"/></svg>
-          <svg class="i-check" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 6.4 4.8 9 10 3.2"/></svg>
-        </button>
-        <a class="mail" href="mailto:dupas.elodie@outlook.com" aria-label="Contact me: dupas.elodie@outlook.com">
-          <span class="window" aria-hidden="true">
-            <span class="track-txt">
-              <span class="t1">Contact me</span>
-              <span class="t2 email">dupas.elodie@outlook.com</span>
-            </span>
-          </span>
-        </a>
+        <button class="mail" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="sheet">Contact me</button>
       </div>
       <span class="sr-only" role="status" aria-live="polite" id="contact-status"></span>
     </header>
@@ -718,34 +685,7 @@
       setTimeout(function () { statusEl.textContent = ""; }, 2400);
     }
 
-    // Desktop : survol + icône copier
-    (function () {
-      var root = document.querySelector(".contact");
-      var btn = root.querySelector(".copy");
-      var win = root.querySelector(".window");
-      var timer;
-
-      // Largeurs des deux libellés, pour que la fenêtre s'ajuste au survol
-      function measure() {
-        win.style.setProperty("--w1", root.querySelector(".t1").offsetWidth + "px");
-        win.style.setProperty("--w2", root.querySelector(".t2").offsetWidth + "px");
-      }
-      measure();
-      if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
-      addEventListener("resize", measure);
-
-      btn.addEventListener("click", function () {
-        copyEmail().then(function (ok) {
-          if (!ok) return;
-          btn.classList.add("is-copied");
-          announce("Email address copied");
-          clearTimeout(timer);
-          timer = setTimeout(function () { btn.classList.remove("is-copied"); }, 2400);
-        });
-      });
-    })();
-
-    // Mobile : panneau en bas d'écran
+    // Panneau contact : bottom sheet sur écran tactile, popover sous le bouton à la souris
     (function () {
       var touch = matchMedia("(hover: none) and (pointer: coarse)");
       var trigger = document.querySelector(".contact .mail");
@@ -758,10 +698,20 @@
       // Active les états :active sur iOS
       document.addEventListener("touchstart", function () {}, { passive: true });
 
+      // Position du popover : sous le bouton, aligné à droite
+      function place() {
+        if (touch.matches) return;
+        var r = trigger.getBoundingClientRect();
+        sheet.style.setProperty("--pop-top", Math.round(r.bottom + 14) + "px");
+        sheet.style.setProperty("--pop-right", Math.max(16, Math.round(innerWidth - r.right - 6)) + "px");
+      }
+
       function open() {
         if (isOpen) return;
         isOpen = true;
+        place();
         sheet.style.transform = "";
+        trigger.setAttribute("aria-expanded", "true");
         root.classList.add("is-open");
         root.setAttribute("aria-hidden", "false");
         page.inert = true;
@@ -772,6 +722,7 @@
         if (!isOpen) return;
         isOpen = false;
         clearTimeout(closeTimer);
+        trigger.setAttribute("aria-expanded", "false");
         sheet.style.transform = "";
         root.classList.remove("is-open");
         root.setAttribute("aria-hidden", "true");
@@ -782,12 +733,11 @@
       }
 
       trigger.addEventListener("click", function (e) {
-        if (!touch.matches) return; // desktop : mailto direct
         e.preventDefault();
         viaKeyboard = e.detail === 0;
-        open();
+        isOpen ? close() : open();
       });
-      trigger.setAttribute("aria-haspopup", touch.matches ? "dialog" : "false");
+      addEventListener("resize", function () { if (isOpen) place(); });
 
       root.addEventListener("click", function (e) {
         if (e.target.closest("[data-close]")) close();
@@ -814,7 +764,7 @@
       var startY = 0, dy = 0, lastY = 0, lastT = 0, velocity = 0, dragging = false, moved = false, h = 0;
 
       sheet.addEventListener("pointerdown", function (e) {
-        if (!isOpen || (e.pointerType === "mouse" && e.button !== 0)) return;
+        if (!isOpen || !touch.matches || (e.pointerType === "mouse" && e.button !== 0)) return;
         dragging = true;
         moved = false;
         startY = lastY = e.clientY;
