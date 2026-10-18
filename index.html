@@ -619,7 +619,7 @@
       var sheet = root.querySelector(".sheet");
       var page = document.querySelector(".page");
       var copyBtn = root.querySelector("[data-copy]");
-      var isOpen = false, closeTimer, resetTimer;
+      var isOpen = false, viaKeyboard = false, closeTimer, resetTimer;
 
       // Active les états :active sur iOS
       document.addEventListener("touchstart", function () {}, { passive: true });
@@ -642,7 +642,7 @@
         root.classList.remove("is-open");
         root.setAttribute("aria-hidden", "true");
         page.inert = false;
-        trigger.focus({ preventScroll: true });
+        if (viaKeyboard) trigger.focus({ preventScroll: true });
         clearTimeout(resetTimer);
         resetTimer = setTimeout(function () { copyBtn.classList.remove("is-copied"); }, 500);
       }
@@ -650,6 +650,7 @@
       trigger.addEventListener("click", function (e) {
         if (!touch.matches) return; // desktop : mailto direct
         e.preventDefault();
+        viaKeyboard = e.detail === 0;
         open();
       });
       trigger.setAttribute("aria-haspopup", touch.matches ? "dialog" : "false");
