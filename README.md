@@ -7,4 +7,6 @@ Site one-page statique d'Élodie Dupas, en ligne sur https://elodiedupas.fr (Ver
 - `assets/` — image (AVIF/WebP/JPEG) et polices Computer Modern réduites aux glyphes latins (licence OFL)
 - SEO : `robots.txt`, `sitemap.xml`, `llms.txt`, `site.webmanifest`, images de partage `og-fr.png` / `og-en.png`, icônes
 
+Charte graphique : voir `DESIGN.md`.
+
 Aperçu local : `npx serve .` · Un push sur `main` déploie en production.
