@@ -93,6 +93,70 @@
       letter-spacing: 0.01em;
     }
 
+    /* Contact */
+    .contact {
+      appearance: none;
+      background: none;
+      border: 0;
+      padding: 0;
+      color: var(--ink);
+      cursor: pointer;
+      justify-self: end;
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .contact:focus-visible { outline: 1px solid var(--muted); outline-offset: 6px; }
+    .contact .dot {
+      display: inline-block;
+      width: 5px;
+      height: 5px;
+      margin: 0 8px 0.18em 0;
+      vertical-align: middle;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+    .contact .window { position: relative; display: block; height: 1.5em; overflow: hidden; }
+    .contact .track-txt {
+      display: flex;
+      flex-direction: column;
+      text-align: right;
+      transition: transform 0.6s var(--ease), opacity 0.35s var(--ease);
+    }
+    .contact .track-txt span { display: block; height: 1.5em; white-space: nowrap; }
+    .contact .email { text-transform: none; letter-spacing: 0.02em; }
+    .contact .done {
+      position: absolute;
+      inset: 0;
+      text-align: right;
+      opacity: 0;
+      transform: translateY(100%);
+      transition: transform 0.6s var(--ease), opacity 0.35s var(--ease);
+    }
+    .contact::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -3px;
+      height: 1px;
+      background: currentColor;
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 0.6s var(--ease);
+    }
+    @media (hover: hover) {
+      .contact:hover .track-txt { transform: translateY(-50%); }
+      .contact:hover::after { transform: scaleX(1); transform-origin: left; }
+    }
+    .contact:focus-visible .track-txt { transform: translateY(-50%); }
+    .contact.is-copied .track-txt { opacity: 0; transform: translateY(-100%); }
+    .contact.is-copied .done { opacity: 1; transform: none; }
+    .contact.is-copied::after { transform: scaleX(0); }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
     /* Stage */
     main {
       min-height: 0;
@@ -247,7 +311,16 @@
     <header class="bar top">
       <span class="name">Élodie Dupas</span>
       <span class="label muted mid">Économie du développement</span>
-      <span class="label muted">Recherche</span>
+      <button class="contact label" type="button" data-email="dupas.elodie@outlook.com" aria-label="Me contacter : copier l'adresse e-mail dupas.elodie@outlook.com">
+        <span class="window" aria-hidden="true">
+          <span class="track-txt">
+            <span><i class="dot"></i>Me contacter</span>
+            <span class="email">dupas.elodie@outlook.com</span>
+          </span>
+          <span class="done"><i class="dot"></i>Copié !</span>
+        </span>
+      </button>
+      <span class="sr-only" role="status" aria-live="polite" id="contact-status"></span>
     </header>
 
     <main>
@@ -290,6 +363,46 @@
       document.getElementById("y").textContent = d.getFullYear();
       document.getElementById("today").textContent = p(d.getDate()) + "." + p(d.getMonth() + 1) + "." + d.getFullYear();
     } catch (e) {}
+    (function () {
+      var btn = document.querySelector(".contact");
+      var status = document.getElementById("contact-status");
+      var email = btn.getAttribute("data-email");
+      var timer;
+
+      function fallbackCopy(text) {
+        var ta = document.createElement("textarea");
+        ta.value = text;
+        ta.setAttribute("readonly", "");
+        ta.style.cssText = "position:fixed;opacity:0;pointer-events:none";
+        document.body.appendChild(ta);
+        ta.select();
+        var ok = false;
+        try { ok = document.execCommand("copy"); } catch (e) {}
+        document.body.removeChild(ta);
+        return ok;
+      }
+
+      function copied() {
+        btn.classList.add("is-copied");
+        status.textContent = "Adresse e-mail copiée";
+        clearTimeout(timer);
+        timer = setTimeout(function () {
+          btn.classList.remove("is-copied");
+          status.textContent = "";
+          btn.blur();
+        }, 2400);
+      }
+
+      btn.addEventListener("click", function () {
+        var done = function () { copied(); };
+        var fail = function () { fallbackCopy(email) ? copied() : (location.href = "mailto:" + email); };
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(email).then(done, fail);
+        } else {
+          fail();
+        }
+      });
+    })();
   </script>
 </body>
 </html>
