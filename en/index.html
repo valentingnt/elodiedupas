@@ -19,7 +19,7 @@
   <meta property="og:url" content="https://elodiedupas.fr/en">
   <meta property="og:locale" content="en_GB">
   <meta property="og:locale:alternate" content="fr_FR">
-  <meta property="og:image" content="https://elodiedupas.fr/og-en.png?v=2">
+  <meta property="og:image" content="https://elodiedupas.fr/og-en.png?v=3">
   <meta property="og:image:type" content="image/png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -29,7 +29,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Élodie Dupas · PhD Candidate in Development Economics">
   <meta name="twitter:description" content="PhD candidate at the Bordeaux School of Economics. Research on the effects of air pollution in low- and middle-income countries and how they differ between women and men.">
-  <meta name="twitter:image" content="https://elodiedupas.fr/og-en.png?v=2">
+  <meta name="twitter:image" content="https://elodiedupas.fr/og-en.png?v=3">
   <meta name="twitter:image:alt" content="Élodie Dupas, PhD candidate in development economics, Bordeaux School of Economics">
 
   <meta name="theme-color" content="#f3f2ee" media="(prefers-color-scheme: light)">
@@ -72,11 +72,11 @@
         "affiliation": {
           "@type": "ResearchOrganization",
           "name": "Bordeaux School of Economics",
-          "alternateName": ["BSE", "Bordeaux Sciences Économiques"],
+          "alternateName": ["BxSE", "Bordeaux Sciences Économiques"],
           "url": "https://www.bse.u-bordeaux.fr/"
         },
         "knowsAbout": ["Development economics", "Air pollution", "Environmental economics", "Gender", "Low- and middle-income countries"],
-        "email": "mailto:dupas.elodie@outlook.com",
+        "email": "mailto:elodie.dupas@u-bordeaux.fr",
         "sameAs": ["https://www.linkedin.com/in/elodie-dupas-15a38a14b/"]
       }
     ]
@@ -165,7 +165,7 @@
     }
     .bar > :last-child { text-align: right; }
     .bar.top { padding-bottom: 14px; border-bottom: 1px solid var(--hair); }
-    .bar.bottom { padding-top: 14px; border-top: 1px solid var(--hair); }
+    .bar.bottom { grid-template-columns: 1fr auto; padding-top: 14px; border-top: 1px solid var(--hair); }
 
     .name {
       font-weight: 400;
@@ -579,7 +579,7 @@
   <div class="page">
     <header class="bar top">
       <h1 class="name">Élodie Dupas</h1>
-      <span class="label muted mid">PhD candidate in development economics · <abbr title="Bordeaux School of Economics">BSE</abbr></span>
+      <span class="label muted mid">PhD candidate in development economics · <abbr title="Bordeaux School of Economics">BxSE</abbr></span>
       <div class="contact label">
         <button class="mail" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="sheet">Contact me</button>
       </div>
@@ -590,7 +590,7 @@
       <div class="stage">
         <div class="side left reveal">
           <p class="label muted">Fig. 1</p>
-          <p class="caption">Supply chain, a field study.</p>
+          <p class="caption">Supply.</p>
         </div>
 
         <figure>
@@ -621,7 +621,6 @@
 
     <footer class="bar bottom">
       <span class="label muted">© <span id="y">2026</span> · <a class="lang" href="/" hreflang="fr" lang="fr">Français</a></span>
-      <span class="label muted mid">Typeset in Computer Modern</span>
       <span class="label muted" id="today">18.10.2026</span>
     </footer>
   </div>
@@ -631,9 +630,9 @@
     <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title" tabindex="-1">
       <div class="grabber" aria-hidden="true"></div>
       <p class="label muted" id="sheet-title">Contact</p>
-      <p class="sheet-email">dupas.elodie@outlook.com</p>
+      <p class="sheet-email">elodie.dupas@u-bordeaux.fr</p>
       <div class="actions">
-        <a class="action" href="mailto:dupas.elodie@outlook.com">
+        <a class="action" href="mailto:elodie.dupas@u-bordeaux.fr">
           <svg viewBox="0 0 18 18" aria-hidden="true"><rect x="1.5" y="3.5" width="15" height="11" rx="1.5"/><path d="m2 4.5 7 5.5 7-5.5"/></svg>
           <span>Write an email</span>
           <svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2 4 4-4 4"/></svg>
@@ -657,7 +656,7 @@
       document.getElementById("y").textContent = d.getFullYear();
       document.getElementById("today").textContent = p(d.getDate()) + "." + p(d.getMonth() + 1) + "." + d.getFullYear();
     } catch (e) {}
-    var EMAIL = "dupas.elodie@outlook.com";
+    var EMAIL = "elodie.dupas@u-bordeaux.fr";
     var statusEl = document.getElementById("contact-status");
 
     function copyEmail() {

@@ -6,7 +6,7 @@ Référence de la direction artistique du site. Source de vérité : les variabl
 
 ## 1. Intention
 
-- **Sujet** : site d'Élodie Dupas, doctorante en économie du développement (Bordeaux School of Economics). Thèse : pollution de l'air et inégalités femmes-hommes dans les pays à revenu faible et intermédiaire.
+- **Sujet** : site d'Élodie Dupas, doctorante en économie du développement (Bordeaux School of Economics). Thèse : pollution de l'air et inégalités de genre dans les pays à revenu faible et intermédiaire.
 - **Ton** : sérieux, épuré, « agence de DA » subtil mais léché. L'humour tient en un seul élément, le meme (teckel à la pompe), traité comme une figure d'article scientifique.
 - **Références** : l'article LaTeX (Computer Modern, figures numérotées, sections §, `\begin{document}`), la grille éditoriale suisse, le papier imprimé (grain léger).
 - **Contraintes fortes** :
@@ -65,21 +65,21 @@ Structure en trois bandes, hauteur exacte de la fenêtre (`100dvh`, repli `100vh
 
 ```
 ┌───────────────────────────────────────────────────────────────┐
-│ Élodie Dupas      DOCTORANTE EN ÉCONOMIE… · BSE    ME CONTACTER│  barre haute + filet
+│ Élodie Dupas     DOCTORANTE EN ÉCONOMIE… · BxSE    ME CONTACTER│  barre haute + filet
 ├───────────────────────────────────────────────────────────────┤
 │                         ┌────────┐  § 0 THÈSE                  │
 │                         │  meme  │  Pollution de l’air et…     │  scène
 │   FIG. 1                │  9:16  │                             │
-│   Approvisionnement,…   └────────┘                             │
+│   Approvisionnement.    └────────┘                             │
 │                Page en cours de remplissage                    │  titre
 │        \begin{document} ───────●──────── \end{document}        │  filet
 ├───────────────────────────────────────────────────────────────┤
-│ © 2026 · English        COMPOSÉ EN COMPUTER MODERN  19.10.2026 │  barre basse + filet
+│ © 2026 · English                                    19.10.2026 │  barre basse + filet
 └───────────────────────────────────────────────────────────────┘
 ```
 
 - **Marges** de page : `clamp(16px, 3.2vw, 44px)` sur les côtés ; haut `clamp(12px, 3vh, 22px)` ; zones sûres iOS respectées (`env(safe-area-inset-*)`).
-- **Barres** : grille `1fr auto 1fr`, filet `--hair` de 1 px, 14 px d'espacement (8 px sur écran très bas).
+- **Barres** : grille `1fr auto 1fr` en haut, `1fr auto` en bas, filet `--hair` de 1 px, 14 px d'espacement (8 px sur écran très bas).
 - **Scène** : grille `1fr auto 1fr`. « Fig. 1 » + légende à gauche, alignées en bas de l'image ; « § 0 Thèse » + sujet à droite, alignés en haut de l'image.
 - **Image** : ratio 9:16, hauteur = espace disponible via container queries (`min(100cqh, var(--plate-max), 177.7cqw)`), plafond `--plate-max` = 620 px (760 px sur grand écran). Repli sans container queries : `clamp(160px, 100vh − 330px, …)`.
 - **Composition centrée verticalement** : la rangée image grandit jusqu'au plafond, puis l'ensemble image + titre reste centré.
@@ -98,8 +98,8 @@ Testé sur Chrome, Firefox et WebKit, du 320×568 au 3440×1300, plus le télép
 
 ## 5. Éléments signature (LaTeX / recherche)
 
-- **Composé en Computer Modern** : la police de LaTeX, citée en colophon dans le pied de page.
-- **Figure numérotée** : « FIG. 1 » + légende en italique, comme dans un article (« Approvisionnement, étude de terrain. »).
+- **Computer Modern** : la police de LaTeX, utilisée pour tout le site (pas de colophon visible).
+- **Figure numérotée** : « FIG. 1 » + légende en italique, comme dans un article (« Approvisionnement. »).
 - **Section** : « § 0 THÈSE » + sujet de thèse.
 - **Filet de progression** : `\begin{document}` ─── ● ─── `\end{document}`, rempli à 62 %, point accent qui pulse. Métaphore de la page « en cours de remplissage ».
 - **Grain de papier** : bruit SVG (`feTurbulence`) fixe, opacité 5 % (7 % en sombre).
@@ -132,7 +132,7 @@ Séquence d'arrivée :
 Le même panneau sert partout, son affichage s'adapte :
 
 - **Déclencheur** : « ME CONTACTER » (libellé Typewriter, en haut à droite), soulignement qui se trace au survol et reste visible tant que le panneau est ouvert (desktop).
-- **Contenu** : libellé « CONTACT », adresse `dupas.elodie@outlook.com` en italique, puis deux lignes séparées par des filets :
+- **Contenu** : libellé « CONTACT », adresse `elodie.dupas@u-bordeaux.fr` en italique, puis deux lignes séparées par des filets :
   - enveloppe + « Écrire un e-mail » + chevron → `mailto:` ;
   - icône copier + « Copier l'adresse » → l'icône devient une coche accent et le texte « Adresse copiée ».
 - **Mobile** (`hover: none` et `pointer: coarse`) : bottom sheet pleine largeur, coins hauts arrondis 18 px, poignée, bouton « Fermer », voile sombre. Se ferme en glissant vers le bas (seuil 30 % ou vitesse > 0.45 px/ms), en touchant le voile, ou 1.4 s après la copie. Vibration courte à la copie sur Android.
@@ -156,12 +156,11 @@ Icônes : traits fins (1.2 px), bouts arrondis, `currentColor`, dessinées en SV
 
 | Emplacement | Français | Anglais |
 |---|---|---|
-| Barre haute | Doctorante en économie du développement · BSE | PhD candidate in development economics · BSE |
+| Barre haute | Doctorante en économie du développement · BxSE | PhD candidate in development economics · BxSE |
 | Bouton | Me contacter | Contact me |
-| Fig. 1 | Approvisionnement, étude de terrain. | Supply chain, a field study. |
-| § 0 | Thèse — Pollution de l’air et inégalités femmes-hommes. | Thesis — Air pollution and gender inequality. |
+| Fig. 1 | Approvisionnement. | Supply. |
+| § 0 | Thèse — Pollution de l’air et inégalités de genre. | Thesis — Air pollution and gender inequality. |
 | Titre | Page en cours de remplissage | Page filling up |
-| Colophon | Composé en Computer Modern | Typeset in Computer Modern |
 | Panneau | Écrire un e-mail / Copier l'adresse / Adresse copiée / Fermer | Write an email / Copy address / Address copied / Close |
 
 La version anglaise (`en/index.html`) est **générée** par `python3 tools/build-en.py` : toute modification de `index.html` doit être suivie de cette commande, et tout nouveau texte visible ajouté à la liste `PAIRS` du script.

@@ -1,7 +1,7 @@
 # Élodie Dupas
 
-> Élodie Dupas est doctorante en économie du développement à la Bordeaux School of Economics (BSE, Bordeaux Sciences Économiques), Université de Bordeaux. Sa thèse porte sur les effets de la pollution de l'air dans les pays à revenu faible et intermédiaire, et sur la façon dont ces effets se répartissent entre femmes et hommes.
-> Élodie Dupas is a PhD candidate in development economics at the Bordeaux School of Economics (BSE, Bordeaux Sciences Économiques), University of Bordeaux. Her research focuses on the effects of air pollution in low- and middle-income countries, and on how these effects are distributed between women and men.
+> Élodie Dupas est doctorante en économie du développement à la Bordeaux School of Economics (BxSE, Bordeaux Sciences Économiques), Université de Bordeaux. Sa thèse porte sur les effets de la pollution de l'air dans les pays à revenu faible et intermédiaire, et sur la façon dont ces effets se répartissent entre femmes et hommes.
+> Élodie Dupas is a PhD candidate in development economics at the Bordeaux School of Economics (BxSE, Bordeaux Sciences Économiques), University of Bordeaux. Her research focuses on the effects of air pollution in low- and middle-income countries, and on how these effects are distributed between women and men.
 
 Le site est en cours de remplissage. / The website is filling up.
 
@@ -12,6 +12,6 @@ Le site est en cours de remplissage. / The website is filling up.
 
 ## Contact et profils
 
-- E-mail : dupas.elodie@outlook.com
+- E-mail : elodie.dupas@u-bordeaux.fr
 - LinkedIn : https://www.linkedin.com/in/elodie-dupas-15a38a14b/
 - Laboratoire / Lab : https://www.bse.u-bordeaux.fr/
