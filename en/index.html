@@ -293,7 +293,7 @@
       appearance: none;
       background: none;
       border: 0;
-      border-bottom: 1px solid var(--hair);
+      position: relative;
       width: 100%;
       min-height: 56px;
       display: grid;
@@ -310,6 +310,8 @@
       -webkit-tap-highlight-color: transparent;
       transition: background-color 0.25s ease;
     }
+    /* Trait entre les deux boutons, de la même largeur que celui sous l'e-mail */
+    .action + .action::before { content: ""; position: absolute; top: 0; left: var(--rule-inset, 0); right: var(--rule-inset, 0); height: 1px; background: var(--hair); }
     .action:active { background: var(--track); transition: none; }
     .action:focus-visible { outline: 1px solid var(--muted); outline-offset: -1px; }
     .action svg {
@@ -368,8 +370,8 @@
       .sheet-root.is-open .sheet { transform: none; opacity: 1; }
       .sheet-email { font-size: 18px; margin-top: 2px; }
       .actions { margin-top: 14px; }
-      .action { min-height: 46px; font-size: 15px; gap: 12px; padding: 0 6px; margin: 0 -6px; width: calc(100% + 12px); border-radius: 6px; }
-      .action:last-child { border-bottom: 0; }
+      /* Surbrillance un peu plus large que les traits : ses bords haut et bas sont les traits eux-mêmes */
+      .action { --rule-inset: 3px; min-height: 46px; font-size: 15px; gap: 12px; padding: 0 3px; margin: 0 -3px; width: calc(100% + 6px); border-radius: 3px; }
       .action:hover { background: var(--track); }
       .action:hover .chev { transform: translateX(2px); }
       .action .chev { transition: transform 0.3s var(--ease); }
