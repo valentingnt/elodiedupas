@@ -753,7 +753,7 @@
         copyEmail().then(function (ok) {
           if (!ok) return;
           copyBtn.classList.add("is-copied");
-          announce("Adresse e-mail copiée");
+          announce(document.documentElement.lang === "en" ? "Email address copied" : "Adresse e-mail copiée");
           if (navigator.vibrate) navigator.vibrate(8);
           clearTimeout(closeTimer);
           closeTimer = setTimeout(close, 1400);
@@ -812,6 +812,108 @@
       sheet.addEventListener("click", function (e) {
         if (moved) { e.preventDefault(); e.stopPropagation(); moved = false; }
       }, true);
+    })();
+
+    // Changement de langue sans rechargement : on récupère l'autre page et on met à jour le texte en place
+    (function () {
+      if (!window.fetch || !window.DOMParser || !history.pushState) return;
+      var cache = {};
+      var KEEP = ["y", "today", "contact-status"];
+      var ATTRS = ["alt", "title", "aria-label", "href", "hreflang", "lang"];
+
+      function load(url) {
+        var key = new URL(url, location.href).pathname.replace(/\/$/, "") || "/";
+        if (!cache[key]) {
+          cache[key] = fetch(url, { credentials: "same-origin" })
+            .then(function (r) { if (!r.ok) throw 0; return r.text(); })
+            .then(function (t) { return new DOMParser().parseFromString(t, "text/html"); });
+          cache[key].catch(function () { delete cache[key]; });
+        }
+        return cache[key];
+      }
+
+      function morph(a, b) {
+        if (a.id && KEEP.indexOf(a.id) > -1) return;
+        ATTRS.forEach(function (n) {
+          if (b.hasAttribute(n)) { if (a.getAttribute(n) !== b.getAttribute(n)) a.setAttribute(n, b.getAttribute(n)); }
+          else if (a.hasAttribute(n)) a.removeAttribute(n);
+        });
+        var ca = a.childNodes, cb = b.childNodes, same = ca.length === cb.length;
+        for (var i = 0; same && i < ca.length; i++) if (ca[i].nodeType !== cb[i].nodeType) same = false;
+        if (!same) { a.innerHTML = b.innerHTML; return; }
+        for (var j = 0; j < ca.length; j++) {
+          if (ca[j].nodeType === 3) { if (ca[j].nodeValue !== cb[j].nodeValue) ca[j].nodeValue = cb[j].nodeValue; }
+          else if (ca[j].nodeType === 1) morph(ca[j], cb[j]);
+        }
+      }
+
+      function apply(doc) {
+        document.documentElement.lang = doc.documentElement.lang;
+        document.title = doc.title;
+        document.querySelectorAll('meta[name], meta[property]').forEach(function (m) {
+          var k = m.hasAttribute("name") ? "name" : "property";
+          var o = doc.querySelector('meta[' + k + '="' + m.getAttribute(k) + '"]');
+          if (o) m.setAttribute("content", o.getAttribute("content"));
+        });
+        var c = document.querySelector('link[rel="canonical"]'), oc = doc.querySelector('link[rel="canonical"]');
+        if (c && oc) c.setAttribute("href", oc.getAttribute("href"));
+        morph(document.querySelector(".page"), doc.querySelector(".page"));
+        morph(document.getElementById("sheet"), doc.getElementById("sheet"));
+      }
+
+      // Même gestuelle qu'à l'ouverture : le titre remonte dans son masque, les légendes se fondent
+      var busy = false;
+      function anim(els, kf, opts) {
+        return Array.prototype.map.call(els, function (el) {
+          return el.animate(kf, Object.assign({ fill: "both" }, opts));
+        });
+      }
+      // Seuls les éléments dont le texte diffère entre les deux langues sont animés
+      function changed(sel, doc) {
+        var next = doc.querySelectorAll(sel);
+        return Array.prototype.filter.call(document.querySelectorAll(sel), function (el, i) {
+          return next[i] && el.textContent.trim() !== next[i].textContent.trim();
+        });
+      }
+
+      function transition(run, doc) {
+        if (matchMedia("(prefers-reduced-motion: reduce)").matches || !Element.prototype.animate) { run(); return Promise.resolve(); }
+        var ease = getComputedStyle(document.documentElement).getPropertyValue("--ease").trim() || "ease";
+        var title = changed(".title .line span", doc);
+        var fades = changed(".reveal > *, .bar .mid, .bar .mail, .bar a.lang", doc);
+        var down = { transform: "translateY(105%)" }, up = { transform: "none" };
+        var out = anim(title, [up, down], { duration: 250, easing: "ease-in-out" })
+          .concat(anim(fades, [{ opacity: 1 }, { opacity: 0 }], { duration: 140 }));
+        return Promise.all(out.map(function (a) { return a.finished; })).then(function () {
+          run();
+          var inn = anim(title, [down, up], { duration: 1100, delay: 100, easing: ease })
+            .concat(anim(fades, [{ opacity: 0 }, { opacity: 1 }], { duration: 800, delay: 250, easing: ease }));
+          out.forEach(function (a) { a.cancel(); });
+          return Promise.all(inn.map(function (a) { return a.finished; })).then(function () {
+            inn.forEach(function (a) { a.cancel(); });
+          });
+        });
+      }
+
+      function go(url, push) {
+        if (busy) { if (!push) setTimeout(function () { go(url, false); }, 200); return; }
+        busy = true;
+        load(url).then(function (doc) {
+          return transition(function () { apply(doc); if (push) history.pushState(null, "", url); }, doc);
+        }).catch(function () { location.href = url; }).then(function () { busy = false; });
+      }
+
+      function lang(e) { return e.target.closest && e.target.closest("a.lang"); }
+      document.addEventListener("click", function (e) {
+        var a = lang(e);
+        if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+        e.preventDefault();
+        go(a.href, true);
+      });
+      ["pointerover", "focusin", "touchstart"].forEach(function (t) {
+        document.addEventListener(t, function (e) { var a = lang(e); if (a) load(a.href).catch(function () {}); }, { passive: true });
+      });
+      addEventListener("popstate", function () { go(location.href, false); });
     })();
   </script>
 </body>

@@ -48,7 +48,6 @@ PAIRS = [
     ('<span>Écrire un e-mail</span>', '<span>Write an email</span>'),
     ('<span class="txt"><span>Copier l\'adresse</span><span>Adresse copiée</span></span>', '<span class="txt"><span>Copy address</span><span>Address copied</span></span>'),
     ('data-close>Fermer</button>', 'data-close>Close</button>'),
-    ('announce("Adresse e-mail copiée");', 'announce("Email address copied");'),
 ]
 
 
